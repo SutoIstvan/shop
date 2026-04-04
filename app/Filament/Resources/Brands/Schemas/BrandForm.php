@@ -19,8 +19,11 @@ class BrandForm
                 TextInput::make('slug')
                     ->required(),
                 FileUpload::make('logo')
-                    ->image()
-                    ->directory('brands'),
+                    ->reorderable()
+                    ->disk('public') 
+                    ->visibility('public')
+                    ->directory('brands')
+                    ->image(),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 TextInput::make('website')

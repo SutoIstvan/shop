@@ -14,105 +14,46 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 
-export default function ShopPage() {
-  const [priceRange, setPriceRange] = useState([0, 100])
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface Brand {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  price: number | string;
+  compare_price?: number | string;
+  images?: string[];
+  category?: Category;
+  brand?: Brand;
+}
+
+interface ShopProps {
+  products: Product[];
+  categories: Category[];
+  brands: Brand[];
+  initialCategory?: string;
+}
+
+export default function ShopPage({ products, categories, brands, initialCategory }: ShopProps) {
+  const [priceRange, setPriceRange] = useState([0, 10000])
   const [selectedFilters, setSelectedFilters] = useState<{categories: string[]; brands: string[]; ratings: number[]}>({
-    categories: [],
+    categories: initialCategory ? [initialCategory] : [],
     brands: [],
     ratings: [],
   })
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
-  const products = [
-    {
-      id: 1,
-      name: "Premium Dog Food",
-      image:
-        "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 49.99,
-      offerPrice: 39.99,
-      category: "Food",
-      brand: "PetNutrition",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Comfortable Dog Bed",
-      image:
-        "https://images.unsplash.com/photo-1541599468348-e96984315921?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 89.99,
-      offerPrice: 69.99,
-      category: "Accessories",
-      brand: "ComfyPets",
-      rating: 4,
-    },
-    {
-      id: 3,
-      name: "Interactive Dog Toy",
-      image:
-        "https://images.unsplash.com/photo-1575425186775-b8de9a427e67?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 24.99,
-      offerPrice: 19.99,
-      category: "Toys",
-      brand: "PlayfulPaws",
-      rating: 5,
-    },
-    {
-      id: 4,
-      name: "Dog Grooming Kit",
-      image:
-        "https://images.unsplash.com/photo-1607734834519-d8576ae60ea6?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 34.99,
-      offerPrice: 29.99,
-      category: "Grooming",
-      brand: "GroomPro",
-      rating: 4,
-    },
-    {
-      id: 5,
-      name: "Organic Dog Treats",
-      image:
-        "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?q=80&w=2073&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 19.99,
-      offerPrice: 15.99,
-      category: "Food",
-      brand: "PetNutrition",
-      rating: 5,
-    },
-    {
-      id: 6,
-      name: "Dog Collar with Name Tag",
-      image:
-        "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 14.99,
-      offerPrice: 12.99,
-      category: "Accessories",
-      brand: "PetStyle",
-      rating: 4,
-    },
-    {
-      id: 7,
-      name: "Dental Chew Toys",
-      image:
-        "https://images.unsplash.com/photo-1591946614720-90a587da4a36?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 9.99,
-      offerPrice: 7.99,
-      category: "Toys",
-      brand: "DentalPet",
-      rating: 3,
-    },
-    {
-      id: 8,
-      name: "Dog Shampoo",
-      image:
-        "https://images.unsplash.com/photo-1583511655826-05700442982d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 12.99,
-      offerPrice: 10.99,
-      category: "Grooming",
-      brand: "GroomPro",
-      rating: 4,
-    },
-  ]
+
 
   const toggleFilter = (type: "categories" | "brands" | "ratings", value: string | number) => {
     setSelectedFilters((prev) => {
@@ -139,7 +80,7 @@ export default function ShopPage() {
       brands: [],
       ratings: [],
     })
-    setPriceRange([0, 100])
+    setPriceRange([0, 10000])
   }
 
   const FilterSidebar = ({ isMobile = false }) => (
@@ -150,7 +91,7 @@ export default function ShopPage() {
           selectedFilters.brands.length > 0 ||
           selectedFilters.ratings.length > 0 ||
           priceRange[0] > 0 ||
-          priceRange[1] < 100) && (
+          priceRange[1] < 10000) && (
           <Button
             variant="ghost"
             size="sm"
@@ -168,15 +109,15 @@ export default function ShopPage() {
             <AccordionTrigger>Categories</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                {["Food", "Accessories", "Toys", "Grooming"].map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
+                {categories.map((category) => (
+                  <div key={category.id} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`category-${category}`}
-                      checked={selectedFilters.categories.includes(category)}
-                      onCheckedChange={() => toggleFilter("categories", category)}
+                      id={`category-${category.slug}`}
+                      checked={selectedFilters.categories.includes(category.name)}
+                      onCheckedChange={() => toggleFilter("categories", category.name)}
                     />
-                    <Label htmlFor={`category-${category}`} className="text-sm font-normal cursor-pointer">
-                      {category}
+                    <Label htmlFor={`category-${category.slug}`} className="text-sm font-normal cursor-pointer">
+                      {category.name}
                     </Label>
                   </div>
                 ))}
@@ -189,9 +130,9 @@ export default function ShopPage() {
             <AccordionContent>
               <div className="space-y-4 px-1">
                 <Slider
-                  defaultValue={[0, 100]}
-                  max={100}
-                  step={1}
+                  defaultValue={[0, 10000]}
+                  max={10000}
+                  step={100}
                   value={priceRange}
                   onValueChange={setPriceRange}
                   className="py-4"
@@ -208,15 +149,15 @@ export default function ShopPage() {
             <AccordionTrigger>Brands</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                {["PetNutrition", "ComfyPets", "PlayfulPaws", "GroomPro", "PetStyle", "DentalPet"].map((brand) => (
-                  <div key={brand} className="flex items-center space-x-2">
+                {brands.map((brand) => (
+                  <div key={brand.id} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`brand-${brand}`}
-                      checked={selectedFilters.brands.includes(brand)}
-                      onCheckedChange={() => toggleFilter("brands", brand)}
+                      id={`brand-${brand.slug}`}
+                      checked={selectedFilters.brands.includes(brand.name)}
+                      onCheckedChange={() => toggleFilter("brands", brand.name)}
                     />
-                    <Label htmlFor={`brand-${brand}`} className="text-sm font-normal cursor-pointer">
-                      {brand}
+                    <Label htmlFor={`brand-${brand.slug}`} className="text-sm font-normal cursor-pointer">
+                      {brand.name}
                     </Label>
                   </div>
                 ))}
@@ -263,22 +204,23 @@ export default function ShopPage() {
 
   const filteredProducts = products.filter((product) => {
     // Filter by category
-    if (selectedFilters.categories.length > 0 && !selectedFilters.categories.includes(product.category)) {
+    if (selectedFilters.categories.length > 0 && !selectedFilters.categories.includes(product.category?.name || "")) {
       return false
     }
 
     // Filter by brand
-    if (selectedFilters.brands.length > 0 && !selectedFilters.brands.includes(product.brand)) {
+    if (selectedFilters.brands.length > 0 && !selectedFilters.brands.includes(product.brand?.name || "")) {
       return false
     }
 
     // Filter by rating
-    if (selectedFilters.ratings.length > 0 && !selectedFilters.ratings.some((r) => product.rating >= r)) {
+    if (selectedFilters.ratings.length > 0 && !selectedFilters.ratings.some((r) => 5 >= r)) {
       return false
     }
 
     // Filter by price
-    if (product.price < priceRange[0] || product.price > priceRange[1]) {
+    const prodPrice = Number(product.price)
+    if (prodPrice < priceRange[0] || prodPrice > priceRange[1]) {
       return false
     }
 
@@ -348,10 +290,10 @@ export default function ShopPage() {
                           <X className="h-3 w-3 cursor-pointer" onClick={() => toggleFilter("brands", brand)} />
                         </Badge>
                       ))}
-                      {(priceRange[0] > 0 || priceRange[1] < 100) && (
+                      {(priceRange[0] > 0 || priceRange[1] < 10000) && (
                         <Badge variant="secondary" className="flex items-center gap-1">
                           ${priceRange[0]} - ${priceRange[1]}
-                          <X className="h-3 w-3 cursor-pointer" onClick={() => setPriceRange([0, 100])} />
+                          <X className="h-3 w-3 cursor-pointer" onClick={() => setPriceRange([0, 10000])} />
                         </Badge>
                       )}
                     </div>
@@ -385,7 +327,7 @@ export default function ShopPage() {
                       <div key={product.id} className="group relative">
                         <div className="aspect-square overflow-hidden rounded-lg bg-background relative">
                           <img
-                            src={product.image}
+                            src={product.images?.[0] || "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg"}
                             alt={product.name}
                             className="h-full w-full object-cover transition-transform group-hover:scale-105"
                           />
@@ -416,18 +358,20 @@ export default function ShopPage() {
                         </div>
                         <div className="mt-4 space-y-1 text-center">
                           <Badge variant="outline" className="mb-2">
-                            {product.category}
+                            {product.category?.name || "Uncategorized"}
                           </Badge>
                           <h3 className="font-medium">{product.name}</h3>
                           <div className="flex justify-center gap-2">
-                            <span className="text-muted-foreground line-through">${product.price.toFixed(2)}</span>
-                            <span className="font-medium text-primary">${product.offerPrice.toFixed(2)}</span>
+                            {product.compare_price && (
+                              <span className="text-muted-foreground line-through">${Number(product.compare_price).toFixed(2)}</span>
+                            )}
+                            <span className="font-medium text-primary">${Number(product.price).toFixed(2)}</span>
                           </div>
                           <div className="flex justify-center">
                             {Array.from({ length: 5 }).map((_, i) => (
                               <svg
                                 key={i}
-                                className={`h-4 w-4 ${i < product.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+                                className={`h-4 w-4 ${i < 5 ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
                               >

@@ -20,7 +20,8 @@ class CategoriesTable
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
-                ImageColumn::make('image'),
+                ImageColumn::make('image')
+                    ->disk('public'),
                 TextColumn::make('parent_id')
                     ->numeric()
                     ->sortable(),

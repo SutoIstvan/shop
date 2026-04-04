@@ -10,56 +10,41 @@ import { Card, CardContent } from "@/components/ui/card"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 
-export default function Welcome() {
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  image?: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  price: number;
+  compare_price?: number;
+  images?: string[];
+  category?: Category;
+}
+
+interface WelcomeProps {
+  categories: Category[];
+  featuredProducts: Product[];
+}
+
+export default function Welcome({ categories, featuredProducts }: WelcomeProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "Premium Dog Food",
-      image:
-        "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 49.99,
-      offerPrice: 39.99,
-      category: "Food",
-    },
-    {
-      id: 2,
-      name: "Comfortable Dog Bed",
-      image:
-        "https://images.unsplash.com/photo-1541599468348-e96984315921?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 89.99,
-      offerPrice: 69.99,
-      category: "Accessories",
-    },
-    {
-      id: 3,
-      name: "Interactive Dog Toy",
-      image:
-        "https://images.unsplash.com/photo-1575425186775-b8de9a427e67?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 24.99,
-      offerPrice: 19.99,
-      category: "Toys",
-    },
-    {
-      id: 4,
-      name: "Dog Grooming Kit",
-      image:
-        "https://images.unsplash.com/photo-1607734834519-d8576ae60ea6?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 34.99,
-      offerPrice: 29.99,
-      category: "Grooming",
-    },
-  ]
+
 
   const testimonials = [
     {
       id: 1,
-      name: "Sarah Johnson",
+      name: "Вячеслав Худокормов",
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
       rating: 5,
-      text: "My dog absolutely loves the premium food I purchased from PetDo. The quality is exceptional and delivery was super fast!",
+      text: "Все отлично!!! Связались быстро, оговорили заказ, отправили в срок. Спасибо большое за отличную работу. Буду сотрудничать еще.",
     },
     {
       id: 2,
@@ -121,33 +106,25 @@ export default function Welcome() {
             <div className="container px-4 md:px-6">
               <h2 className="text-2xl font-bold tracking-tight text-center mb-8 md:text-3xl">Shop by Category</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                {["Food", "Accessories", "Toys", "Grooming"].map((category, index) => {
-                  const categoryImages = [
-                    "https://images.unsplash.com/photo-1585846888147-3fe14c130048?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3", // Food
-                    "https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3", // Accessories
-                    "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3", // Toys
-                    "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3", // Grooming
-                  ]
-                  return (
-                    <Link
-                      key={category}
-                      href={`/category/${category.toLowerCase()}`}
-                      className="group relative overflow-hidden rounded-lg bg-background shadow-md transition-all hover:shadow-lg"
-                    >
-                      <div className="aspect-square relative">
-                        <img
-                          src={categoryImages[index]}
-                          alt={category}
-                          className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                        <div className="absolute bottom-0 w-full p-4 pointer-events-none">
-                          <h3 className="text-lg font-semibold text-white">{category}</h3>
-                        </div>
+                {categories.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={`/category/${category.slug}`}
+                    className="group relative overflow-hidden rounded-lg bg-background shadow-md transition-all hover:shadow-lg"
+                  >
+                    <div className="aspect-square relative">
+                      <img
+                        src={category.image || "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/other/jascent-leung--uF6u5Cmnsw-unsplash-3.jpg"}
+                        alt={category.name}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                      <div className="absolute bottom-0 w-full p-4 pointer-events-none">
+                        <h3 className="text-lg font-semibold text-white">{category.name}</h3>
                       </div>
-                    </Link>
-                  )
-                })}
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
           </section>
@@ -157,51 +134,56 @@ export default function Welcome() {
             <div className="container px-4 md:px-6">
               <h2 className="text-2xl font-bold tracking-tight text-center mb-8 md:text-3xl">Featured Products</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredProducts.map((product) => (
-                  <div key={product.id} className="group relative">
-                    <div className="aspect-square overflow-hidden rounded-lg bg-background relative">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                      />
-                      <div className="absolute top-4 right-4 flex flex-col gap-2">
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-                        >
-                          <Heart className="h-4 w-4" />
-                          <span className="sr-only">Add to wishlist</span>
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-                        >
-                          <Search className="h-4 w-4" />
-                          <span className="sr-only">Quick view</span>
-                        </Button>
+                {featuredProducts.map((product) => {
+                  const imageUrl = product.images?.[0] || "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg";
+                  return (
+                    <div key={product.id} className="group relative">
+                      <div className="aspect-square overflow-hidden rounded-lg bg-background relative">
+                        <img
+                          src={imageUrl}
+                          alt={product.name}
+                          className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute top-4 right-4 flex flex-col gap-2">
+                          <Button
+                            size="icon"
+                            variant="secondary"
+                            className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                          >
+                            <Heart className="h-4 w-4" />
+                            <span className="sr-only">Add to wishlist</span>
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="secondary"
+                            className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                          >
+                            <Search className="h-4 w-4" />
+                            <span className="sr-only">Quick view</span>
+                          </Button>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                          <Button className="mx-auto">
+                            <ShoppingCart className="mr-2 h-4 w-4" />
+                            Add to Cart
+                          </Button>
+                        </div>
                       </div>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                        <Button className="mx-auto">
-                          <ShoppingCart className="mr-2 h-4 w-4" />
-                          Add to Cart
-                        </Button>
+                      <div className="mt-4 space-y-1 text-center">
+                        <Badge variant="outline" className="mb-2">
+                          {product.category?.name || "Uncategorized"}
+                        </Badge>
+                        <h3 className="font-medium">{product.name}</h3>
+                        <div className="flex justify-center gap-2">
+                          {product.compare_price && (
+                            <span className="text-muted-foreground line-through">${Number(product.compare_price).toFixed(2)}</span>
+                          )}
+                          <span className="font-medium text-primary">${Number(product.price).toFixed(2)}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-4 space-y-1 text-center">
-                      <Badge variant="outline" className="mb-2">
-                        {product.category}
-                      </Badge>
-                      <h3 className="font-medium">{product.name}</h3>
-                      <div className="flex justify-center gap-2">
-                        <span className="text-muted-foreground line-through">${product.price.toFixed(2)}</span>
-                        <span className="font-medium text-primary">${product.offerPrice.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
               <div className="mt-10 text-center">
                 <Button variant="outline" size="lg" asChild>
@@ -278,9 +260,8 @@ export default function Welcome() {
                             {Array.from({ length: 5 }).map((_, i) => (
                               <Star
                                 key={i}
-                                className={`h-4 w-4 ${
-                                  i < testimonial.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
-                                }`}
+                                className={`h-4 w-4 ${i < testimonial.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                                  }`}
                               />
                             ))}
                           </div>

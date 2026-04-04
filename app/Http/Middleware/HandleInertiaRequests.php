@@ -42,6 +42,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'sharedCategories' => \App\Models\Category::where('is_active', true)->orderBy('sort_order')->get(),
         ];
     }
 }

@@ -83,6 +83,8 @@ class ProductForm
                             ->multiple()
                             ->maxFiles(10)
                             ->reorderable()
+                            ->disk('public') 
+                            ->visibility('public')
                             ->directory('products')
                             ->columnSpanFull(),
                     ]),

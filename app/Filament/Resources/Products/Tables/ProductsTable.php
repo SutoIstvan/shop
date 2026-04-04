@@ -20,6 +20,7 @@ class ProductsTable
             ->columns([
                 ImageColumn::make('images')
                     ->label('Image')
+                    ->disk('public')
                     ->circular()
                     ->stacked()
                     ->limit(3),

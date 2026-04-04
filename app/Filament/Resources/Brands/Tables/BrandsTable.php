@@ -20,7 +20,8 @@ class BrandsTable
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
-                ImageColumn::make('logo'),
+                ImageColumn::make('logo')
+                    ->disk('public'),
                 TextColumn::make('website')
                     ->searchable(),
                 IconColumn::make('is_active')

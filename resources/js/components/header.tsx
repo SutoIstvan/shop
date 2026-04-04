@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "@inertiajs/react"
+import { Link, usePage } from "@inertiajs/react"
 import { ShoppingCart, Search, ChevronDown, Globe, User, Menu, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { sharedCategories } = usePage<any>().props
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
@@ -36,26 +37,13 @@ export default function Header() {
                 Categories <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem asChild>
-                  <Link href="/category/food" className="w-full cursor-pointer">
-                    Food
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/category/accessories" className="w-full cursor-pointer">
-                    Accessories
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/category/toys" className="w-full cursor-pointer">
-                    Toys
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/category/grooming" className="w-full cursor-pointer">
-                    Grooming
-                  </Link>
-                </DropdownMenuItem>
+                {sharedCategories?.map((category: any) => (
+                  <DropdownMenuItem key={category.id} asChild>
+                    <Link href={`/category/${category.slug}`} className="w-full cursor-pointer">
+                      {category.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
             <Link href="/about" className="text-sm font-medium transition-colors hover:text-primary">
@@ -130,18 +118,11 @@ export default function Header() {
                 Categories <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
               </summary>
               <nav className="mt-2 ml-4 flex flex-col space-y-2">
-                <Link href="/category/food" className="text-sm transition-colors hover:text-primary">
-                  Food
-                </Link>
-                <Link href="/category/accessories" className="text-sm transition-colors hover:text-primary">
-                  Accessories
-                </Link>
-                <Link href="/category/toys" className="text-sm transition-colors hover:text-primary">
-                  Toys
-                </Link>
-                <Link href="/category/grooming" className="text-sm transition-colors hover:text-primary">
-                  Grooming
-                </Link>
+                {sharedCategories?.map((category: any) => (
+                  <Link key={category.id} href={`/category/${category.slug}`} className="text-sm transition-colors hover:text-primary">
+                    {category.name}
+                  </Link>
+                ))}
               </nav>
             </details>
             <Link href="/about" className="text-sm font-medium transition-colors hover:text-primary">
