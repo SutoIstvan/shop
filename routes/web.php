@@ -30,6 +30,20 @@ Route::get('/category/{slug}', function ($slug) {
     return redirect()->route('shop', ['category' => $category->name]);
 })->name('category.show');
 
+Route::get('/product/{slug}', function ($slug) {
+    $product = Product::with(['category', 'brand'])->where('slug', $slug)->firstOrFail();
+    $relatedProducts = Product::with('category')
+        ->where('is_active', true)
+        ->where('id', '!=', $product->id)
+        ->where('category_id', $product->category_id)
+        ->take(4)
+        ->get();
+    return Inertia::render('product', [
+        'product' => $product,
+        'relatedProducts' => $relatedProducts,
+    ]);
+})->name('product.show');
+
 Route::inertia('/cart', 'cart')->name('cart');
 Route::inertia('/about', 'about')->name('about');
 Route::inertia('/contact', 'contact')->name('contact');

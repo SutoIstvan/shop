@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 
 import Header from "@/components/header"
 import Footer from "@/components/footer"
+import { storageUrl } from "@/lib/image-url"
 
 interface Category {
   id: number;
@@ -46,7 +47,7 @@ interface ShopProps {
 
 export default function ShopPage({ products, categories, brands, initialCategory }: ShopProps) {
   const [priceRange, setPriceRange] = useState([0, 10000])
-  const [selectedFilters, setSelectedFilters] = useState<{categories: string[]; brands: string[]; ratings: number[]}>({
+  const [selectedFilters, setSelectedFilters] = useState<{ categories: string[]; brands: string[]; ratings: number[] }>({
     categories: initialCategory ? [initialCategory] : [],
     brands: [],
     ratings: [],
@@ -92,15 +93,15 @@ export default function ShopPage({ products, categories, brands, initialCategory
           selectedFilters.ratings.length > 0 ||
           priceRange[0] > 0 ||
           priceRange[1] < 10000) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearFilters}
-            className="h-8 text-xs text-primary hover:text-primary/80"
-          >
-            Clear all
-          </Button>
-        )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="h-8 text-xs text-primary hover:text-primary/80"
+            >
+              Clear all
+            </Button>
+          )}
       </div>
 
       <div className="space-y-4">
@@ -324,10 +325,10 @@ export default function ShopPage({ products, categories, brands, initialCategory
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredProducts.map((product) => (
-                      <div key={product.id} className="group relative">
+                      <Link key={product.id} href={`/product/${product.slug}`} className="group relative block">
                         <div className="aspect-square overflow-hidden rounded-lg bg-background relative">
                           <img
-                            src={product.images?.[0] || "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg"}
+                            src={product.images?.[0] ? storageUrl(product.images[0]) : "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg"}
                             alt={product.name}
                             className="h-full w-full object-cover transition-transform group-hover:scale-105"
                           />
@@ -336,6 +337,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
                               size="icon"
                               variant="secondary"
                               className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                              onClick={(e) => e.preventDefault()}
                             >
                               <Heart className="h-4 w-4" />
                               <span className="sr-only">Add to wishlist</span>
@@ -344,13 +346,14 @@ export default function ShopPage({ products, categories, brands, initialCategory
                               size="icon"
                               variant="secondary"
                               className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                              onClick={(e) => e.preventDefault()}
                             >
                               <Search className="h-4 w-4" />
                               <span className="sr-only">Quick view</span>
                             </Button>
                           </div>
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                            <Button className="mx-auto">
+                            <Button className="mx-auto mt-40" onClick={(e) => e.preventDefault()}>
                               <ShoppingCart className="mr-2 h-4 w-4" />
                               Add to Cart
                             </Button>
@@ -380,7 +383,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
                             ))}
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 )}

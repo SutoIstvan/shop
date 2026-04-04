@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
+import { storageUrl } from "@/lib/image-url"
 
 interface Category {
   id: number;
@@ -92,7 +93,7 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
                 </div>
                 <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] rounded-xl overflow-hidden pointer-events-none">
                   <img
-                    src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
+                    src="/coffee.png"
                     alt="Happy dog"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
@@ -135,9 +136,9 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
               <h2 className="text-2xl font-bold tracking-tight text-center mb-8 md:text-3xl">Featured Products</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {featuredProducts.map((product) => {
-                  const imageUrl = product.images?.[0] || "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg";
+                  const imageUrl = product.images?.[0] ? storageUrl(product.images[0]) : "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg";
                   return (
-                    <div key={product.id} className="group relative">
+                    <Link key={product.id} href={`/product/${product.slug}`} className="group relative block">
                       <div className="aspect-square overflow-hidden rounded-lg bg-background relative">
                         <img
                           src={imageUrl}
@@ -149,6 +150,7 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
                             size="icon"
                             variant="secondary"
                             className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                            onClick={(e) => e.preventDefault()}
                           >
                             <Heart className="h-4 w-4" />
                             <span className="sr-only">Add to wishlist</span>
@@ -157,13 +159,14 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
                             size="icon"
                             variant="secondary"
                             className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                            onClick={(e) => e.preventDefault()}
                           >
                             <Search className="h-4 w-4" />
                             <span className="sr-only">Quick view</span>
                           </Button>
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                          <Button className="mx-auto">
+                          <Button className="mx-auto mt-40" onClick={(e) => e.preventDefault()}>
                             <ShoppingCart className="mr-2 h-4 w-4" />
                             Add to Cart
                           </Button>
@@ -181,7 +184,7 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
                           <span className="font-medium text-primary">${Number(product.price).toFixed(2)}</span>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   )
                 })}
               </div>
