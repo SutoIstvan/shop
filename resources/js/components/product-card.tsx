@@ -1,0 +1,88 @@
+import { Link } from "@inertiajs/react"
+import { Heart, Search, ShoppingCart } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { storageUrl } from "@/lib/image-url"
+
+export interface ProductCardProps {
+  product: {
+    id: number | string;
+    name: string;
+    slug: string;
+    price: number | string;
+    compare_price?: number | string | null;
+    images?: string[];
+    category?: {
+      name: string;
+    };
+  };
+}
+
+export function ProductCard({ product }: ProductCardProps) {
+  const imageUrl = product.images?.[0] 
+    ? storageUrl(product.images[0]) 
+    : "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg"
+
+  return (
+    <Link href={`/product/${product.slug}`} className="group relative block">
+      <div className="aspect-square overflow-hidden rounded-lg bg-background relative">
+        <img
+          src={imageUrl}
+          alt={product.name}
+          className="h-full w-full object-cover transition-transform group-hover:scale-105"
+        />
+        <div className="absolute top-4 right-4 flex flex-col gap-2">
+          <Button
+            size="icon"
+            variant="secondary"
+            className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+            onClick={(e) => { e.preventDefault() }}
+          >
+            <Heart className="h-4 w-4" />
+            <span className="sr-only">Add to wishlist</span>
+          </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+            className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+            onClick={(e) => { e.preventDefault() }}
+          >
+            <Search className="h-4 w-4" />
+            <span className="sr-only">Quick view</span>
+          </Button>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+          <Button className="mx-auto mt-40" onClick={(e) => { e.preventDefault() }}>
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Add to Cart
+          </Button>
+        </div>
+      </div>
+      <div className="mt-4 space-y-1 text-center">
+        <Badge variant="outline" className="mb-2">
+          {product.category?.name || "Uncategorized"}
+        </Badge>
+        <h3 className="font-medium">{product.name}</h3>
+        <div className="flex justify-center gap-2">
+          {product.compare_price && (
+            <span className="text-muted-foreground line-through">${Number(product.compare_price).toFixed(2)}</span>
+          )}
+          <span className="font-medium text-primary">${Number(product.price).toFixed(2)}</span>
+        </div>
+        <div className="flex justify-center">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <svg
+              key={i}
+              className={`h-4 w-4 ${i < 5 ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+          ))}
+        </div>
+      </div>
+    </Link>
+  )
+}

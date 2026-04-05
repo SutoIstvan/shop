@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { storageUrl } from "@/lib/image-url"
+import { ProductCard } from "@/components/product-card"
 
 interface Category {
   id: number;
@@ -301,49 +302,9 @@ export default function ProductPage({ product, relatedProducts }: ProductPagePro
               <section className="mt-16">
                 <h2 className="text-2xl font-bold tracking-tight text-center mb-8">Related Products</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {relatedProducts.map((relProduct) => {
-                    const relImageUrl = relProduct.images?.[0] ? storageUrl(relProduct.images[0]) : placeholderImage
-                    return (
-                      <Link key={relProduct.id} href={`/product/${relProduct.slug}`} className="group relative block">
-                        <div className="aspect-square overflow-hidden rounded-lg bg-background relative">
-                          <img
-                            src={relImageUrl}
-                            alt={relProduct.name}
-                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                          />
-                          <div className="absolute top-4 right-4 flex flex-col gap-2">
-                            <Button
-                              size="icon"
-                              variant="secondary"
-                              className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <Heart className="h-4 w-4" />
-                              <span className="sr-only">Add to wishlist</span>
-                            </Button>
-                          </div>
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                            <Button className="mx-auto" onClick={(e) => e.preventDefault()}>
-                              <ShoppingCart className="mr-2 h-4 w-4" />
-                              Add to Cart
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="mt-4 space-y-1 text-center">
-                          <Badge variant="outline" className="mb-2">
-                            {relProduct.category?.name || "Uncategorized"}
-                          </Badge>
-                          <h3 className="font-medium">{relProduct.name}</h3>
-                          <div className="flex justify-center gap-2">
-                            {relProduct.compare_price && (
-                              <span className="text-muted-foreground line-through">${Number(relProduct.compare_price).toFixed(2)}</span>
-                            )}
-                            <span className="font-medium text-primary">${Number(relProduct.price).toFixed(2)}</span>
-                          </div>
-                        </div>
-                      </Link>
-                    )
-                  })}
+                  {relatedProducts.map((relProduct) => (
+                    <ProductCard key={relProduct.id} product={relProduct as any} />
+                  ))}
                 </div>
               </section>
             )}

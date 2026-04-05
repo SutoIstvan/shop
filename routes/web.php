@@ -32,15 +32,60 @@ Route::get('/category/{slug}', function ($slug) {
 
 Route::get('/product/{slug}', function ($slug) {
     $product = Product::with(['category', 'brand'])->where('slug', $slug)->firstOrFail();
+
     $relatedProducts = Product::with('category')
         ->where('is_active', true)
         ->where('id', '!=', $product->id)
         ->where('category_id', $product->category_id)
         ->take(4)
         ->get();
+
+    $price = number_format($product->price, 0, '.', ' ');
+
+    $firstImage = collect($product->images)->first();
+    $ogImage = $firstImage
+        ? asset('storage/' . $firstImage)
+        : asset('images/og-default.jpg');
+
     return Inertia::render('product', [
-        'product' => $product,
+        'product'         => $product,
         'relatedProducts' => $relatedProducts,
+
+        'meta' => [
+            'title'       => $product->name . ' — купити за ' . $price . ' грн | ' . config('app.name'),
+            'description' => $product->name . ' за ' . $price . ' грн. '
+                           . \Illuminate\Support\Str::limit(strip_tags($product->description ?? ''), 120)
+                           . ' Доставка по Україні.',
+            'og_image'    => $ogImage,
+            'canonical'   => route('product.show', $product->slug),
+        ],
+
+        'schema' => [
+            '@context'    => 'https://schema.org',
+            '@type'       => 'Product',
+            'name'        => $product->name,
+            'sku'         => $product->sku,
+            'description' => strip_tags($product->description ?? ''),
+            'image'       => collect($product->images)
+                                ->map(fn($img) => asset('storage/' . $img))
+                                ->values()
+                                ->toArray(),
+            'brand' => [
+                '@type' => 'Brand',
+                'name'  => $product->brand?->name ?? config('app.name'),
+            ],
+            'offers' => [
+                '@type'           => 'Offer',
+                'price'           => (string) $product->price,
+                'priceCurrency'   => 'UAH',
+                'availability'    => $product->in_stock
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+                'itemCondition'   => 'https://schema.org/NewCondition',
+                'url'             => route('product.show', $product->slug),
+                'priceValidUntil' => now()->addYear()->toDateString(),
+            ],
+        ],
     ]);
 })->name('product.show');
 
