@@ -19,89 +19,109 @@ class ProductForm
     {
         return $schema
             ->components([
-                Section::make('Product Information')
+                Grid::make(3) // 3 колонки
+                    ->columnSpanFull()
                     ->schema([
-                        Grid::make(2)
+
+                        // 👈 ЛЕВАЯ ЧАСТЬ (2/3 ширины)
+                        Grid::make(1)
+                            ->columnSpan(2)
                             ->schema([
-                                TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('slug')
-                                    ->required()
-                                    ->unique(ignoreRecord: true)
-                                    ->maxLength(255),
+
+                                Section::make('Product Information')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                TextInput::make('name')
+                                                    ->required()
+                                                    ->maxLength(255),
+
+                                                TextInput::make('slug')
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->maxLength(255),
+                                            ]),
+
+                                        Textarea::make('description')
+                                            ->columnSpanFull()
+                                            ->rows(4),
+                                    ]),
+
+                                Section::make('Pricing & Inventory')
+                                    ->schema([
+                                        Grid::make(3)
+                                            ->schema([
+                                                TextInput::make('price')
+                                                    ->required()
+                                                    ->numeric()
+                                                    ->prefix('$'),
+
+                                                TextInput::make('compare_price')
+                                                    ->numeric()
+                                                    ->prefix('$')
+                                                    ->label('Compare at Price'),
+
+                                                TextInput::make('sku')
+                                                    ->label('SKU')
+                                                    ->unique(ignoreRecord: true)
+                                                    ->maxLength(255),
+                                            ]),
+
+                                        TextInput::make('quantity')
+                                            ->required()
+                                            ->numeric()
+                                            ->default(0),
+                                    ]),
+
+                                Section::make('Associations')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Select::make('category_id')
+                                                    ->label('Category')
+                                                    ->relationship('category', 'name')
+                                                    ->searchable()
+                                                    ->preload(),
+
+                                                Select::make('brand_id')
+                                                    ->label('Brand')
+                                                    ->relationship('brand', 'name')
+                                                    ->searchable()
+                                                    ->preload(),
+                                            ]),
+                                    ]),
+
+                                Section::make('Status')
+                                    ->schema([
+                                        Grid::make(3)
+                                            ->schema([
+                                                Toggle::make('is_active')
+                                                    ->label('Active')
+                                                    ->default(true),
+
+                                                Toggle::make('is_featured')
+                                                    ->label('Featured')
+                                                    ->default(false),
+
+                                                Toggle::make('in_stock')
+                                                    ->label('In Stock')
+                                                    ->default(true),
+                                            ]),
+                                    ]),
                             ]),
-                        Textarea::make('description')
-                            ->columnSpanFull()
-                            ->rows(4),
-                    ]),
 
-                Section::make('Pricing & Inventory')
-                    ->schema([
-                        Grid::make(3)
+                        // 👉 ПРАВАЯ ЧАСТЬ (1/3 ширины)
+                        Section::make('Images')
+                            ->columnSpan(1)
                             ->schema([
-                                TextInput::make('price')
-                                    ->required()
-                                    ->numeric()
-                                    ->prefix('$'),
-                                TextInput::make('compare_price')
-                                    ->numeric()
-                                    ->prefix('$')
-                                    ->label('Compare at Price'),
-                                TextInput::make('sku')
-                                    ->label('SKU')
-                                    ->unique(ignoreRecord: true)
-                                    ->maxLength(255),
-                            ]),
-                        TextInput::make('quantity')
-                            ->required()
-                            ->numeric()
-                            ->default(0),
-                    ]),
-
-                Section::make('Associations')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('category_id')
-                                    ->label('Category')
-                                    ->relationship('category', 'name')
-                                    ->searchable()
-                                    ->preload(),
-                                Select::make('brand_id')
-                                    ->label('Brand')
-                                    ->relationship('brand', 'name')
-                                    ->searchable()
-                                    ->preload(),
-                            ]),
-                    ]),
-
-                Section::make('Images')
-                    ->schema([
-                        FileUpload::make('images')
-                            ->image()
-                            ->multiple()
-                            ->maxFiles(10)
-                            ->reorderable()
-                            ->disk('public') 
-                            ->visibility('public')
-                            ->directory('products')
-                            ->columnSpanFull(),
-                    ]),
-
-                Section::make('Status')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Toggle::make('is_active')
-                                    ->label('Active')
-                                    ->default(true),
-                                Toggle::make('is_featured')
-                                    ->label('Featured')
-                                    ->default(false),
-                                Toggle::make('in_stock')
-                                    ->label('In Stock')
-                                    ->default(true),
+                                FileUpload::make('images')
+                                    ->image()
+                                    ->multiple()
+                                    ->maxFiles(10)
+                                    ->reorderable()
+                                    ->disk('public')
+                                    ->visibility('public')
+                                    ->directory('products'),
                             ]),
                     ]),
             ]);
