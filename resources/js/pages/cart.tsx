@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, Head } from "@inertiajs/react"
 import { Minus, Plus, Trash2, ArrowRight } from 'lucide-react'
 
@@ -9,45 +9,23 @@ import { Card, CardContent } from "@/components/ui/card"
 
 import Header from "@/components/header"
 import Footer from "@/components/footer"
+import { useCartStore } from "@/store/use-cart-store"
+import { storageUrl } from "@/lib/image-url"
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Premium Dog Food",
-      image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 39.99,
-      quantity: 2,
-    },
-    {
-      id: 2,
-      name: "Comfortable Dog Bed",
-      image: "https://images.unsplash.com/photo-1541599468348-e96984315921?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 69.99,
-      quantity: 1,
-    },
-    {
-      id: 3,
-      name: "Interactive Dog Toy",
-      image: "https://images.unsplash.com/photo-1575425186775-b8de9a427e67?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-      price: 19.99,
-      quantity: 3,
-    },
-  ])
-
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity < 1) return
-    setCartItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)))
-  }
-
-  const removeItem = (id: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id))
-  }
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = 5.99
-  const tax = subtotal * 0.08
-  const total = subtotal + shipping + tax
+  const cartItems = useCartStore((state) => state.items)
+  const updateQuantity = useCartStore((state) => state.updateQuantity)
+  const removeItem = useCartStore((state) => state.removeItem)
+  const clearCart = useCartStore((state) => state.clearCart)
+  
+  // Hydration fix
+  const [isHydrated, setIsHydrated] = useState(false)
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+  
+  const subtotal = cartItems.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0)
+  const total = subtotal
 
   return (
     <>
@@ -89,22 +67,24 @@ export default function CartPage() {
                         <div className="col-span-2 text-right">Subtotal</div>
                       </div>
                       <Separator />
-                      {cartItems.map((item, index) => (
+                      {isHydrated && cartItems.map((item, index) => {
+                        const currentImage = item.product.images?.[0] ? storageUrl(item.product.images[0]) : "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg";
+                        return (
                         <div key={item.id}>
                           <div className="py-6">
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                               <div className="col-span-6 flex items-center gap-4">
-                                <div className="relative h-20 w-20 rounded-md overflow-hidden">
+                                <div className="relative h-20 w-20 rounded-md overflow-hidden bg-muted">
                                   <img 
-                                    src={item.image} 
-                                    alt={item.name} 
+                                    src={currentImage} 
+                                    alt={item.product.name} 
                                     className="object-cover w-full h-full absolute inset-0" 
                                   />
                                 </div>
                                 <div>
-                                  <h3 className="font-medium">{item.name}</h3>
+                                  <h3 className="font-medium text-balance pr-2">{item.product.name}</h3>
                                   <p className="text-sm text-muted-foreground md:hidden">
-                                    ${item.price.toFixed(2)}
+                                    ${Number(item.product.price).toFixed(2)}
                                   </p>
                                   <Button
                                     variant="ghost"
@@ -118,7 +98,7 @@ export default function CartPage() {
                                 </div>
                               </div>
                               <div className="col-span-2 text-center hidden md:block">
-                                ${item.price.toFixed(2)}
+                                ${Number(item.product.price).toFixed(2)}
                               </div>
                               <div className="col-span-2 flex items-center justify-center">
                                 <div className="flex items-center border rounded-md">
@@ -145,7 +125,7 @@ export default function CartPage() {
                               </div>
                               <div className="col-span-2 text-right flex items-center justify-between md:justify-end">
                                 <span className="font-medium">
-                                  ${(item.price * item.quantity).toFixed(2)}
+                                  ${(Number(item.product.price) * item.quantity).toFixed(2)}
                                 </span>
                                 <Button
                                   variant="ghost"
@@ -161,13 +141,13 @@ export default function CartPage() {
                           </div>
                           {index < cartItems.length - 1 && <Separator />}
                         </div>
-                      ))}
+                      )})}
                     </div>
                     <div className="flex items-center justify-between bg-muted p-6 rounded-b-lg">
                       <Button variant="outline" asChild>
                         <Link href="/shop">Continue Shopping</Link>
                       </Button>
-                      <Button variant="ghost" onClick={() => setCartItems([])}>
+                      <Button variant="ghost" onClick={clearCart}>
                         Clear Cart
                       </Button>
                     </div>
@@ -182,14 +162,6 @@ export default function CartPage() {
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Subtotal</span>
                           <span>${subtotal.toFixed(2)}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Shipping</span>
-                          <span>${shipping.toFixed(2)}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Tax</span>
-                          <span>${tax.toFixed(2)}</span>
                         </div>
                         <Separator />
                         <div className="flex items-center justify-between font-medium text-lg">

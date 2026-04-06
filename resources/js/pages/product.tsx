@@ -11,6 +11,8 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { storageUrl } from "@/lib/image-url"
 import { ProductCard } from "@/components/product-card"
+import { useCartStore } from "@/store/use-cart-store"
+import { toast } from "sonner"
 
 interface Category {
   id: number;
@@ -61,6 +63,21 @@ export default function ProductPage({ product, relatedProducts }: ProductPagePro
 
   const prevImage = () => {
     setSelectedImage((prev) => (prev - 1 + images.length) % images.length)
+  }
+
+  const addItem = useCartStore((state) => state.addItem)
+
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      images: product.images,
+    }, quantity)
+    toast.success(`${quantity}x ${product.name} added to cart`, {
+      description: "You can view it in your shopping cart.",
+    })
   }
 
   return (
@@ -239,7 +256,7 @@ export default function ProductPage({ product, relatedProducts }: ProductPagePro
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <Button size="lg" className="flex-1 font-medium">
+                    <Button size="lg" className="flex-1 font-medium" onClick={handleAddToCart}>
                       <ShoppingCart className="mr-2 h-5 w-5" />
                       Add to Cart
                     </Button>

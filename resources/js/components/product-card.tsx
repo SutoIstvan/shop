@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { storageUrl } from "@/lib/image-url"
+import { useCartStore } from "@/store/use-cart-store"
+import { toast } from "sonner"
 
 export interface ProductCardProps {
   product: {
@@ -21,9 +23,25 @@ export interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const imageUrl = product.images?.[0] 
-    ? storageUrl(product.images[0]) 
+  const imageUrl = product.images?.[0]
+    ? storageUrl(product.images[0])
     : "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg"
+
+  const addItem = useCartStore((state) => state.addItem)
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    addItem({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      images: product.images,
+    })
+    toast.success(`${product.name} added to cart`, {
+      description: "You can view it in your shopping cart.",
+    })
+  }
 
   return (
     <Link href={`/product/${product.slug}`} className="group relative block">
@@ -44,18 +62,10 @@ export function ProductCard({ product }: ProductCardProps) {
             <Heart className="h-4 w-4" />
             <span className="sr-only">Add to wishlist</span>
           </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="h-8 w-8 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-            onClick={(e) => { e.preventDefault() }}
-          >
-            <Search className="h-4 w-4" />
-            <span className="sr-only">Quick view</span>
-          </Button>
+
         </div>
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-          <Button className="mx-auto mt-40" onClick={(e) => { e.preventDefault() }}>
+        <div className="absolute inset-x-0 bottom-8 flex justify-center opacity-0 transition-opacity group-hover:opacity-100">
+          <Button className="mx-auto" onClick={handleAddToCart}>
             <ShoppingCart className="mr-2 h-4 w-4" />
             Add to Cart
           </Button>

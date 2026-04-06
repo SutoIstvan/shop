@@ -1,17 +1,27 @@
 import { useState, useEffect } from "react"
 import { Link, usePage, router } from "@inertiajs/react"
-import { ShoppingCart, Search, ChevronDown, Globe, User, Menu, X } from "lucide-react"
+import { ShoppingCart, Search, ChevronDown, User, Menu, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import { useCartStore } from "@/store/use-cart-store"
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const { sharedCategories, url } = usePage<any>().props
   
+  const cartItems = useCartStore((state) => state.items)
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
+  
+  // Hydration fix for persist
+  const [isHydrated, setIsHydrated] = useState(false)
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search)
@@ -85,19 +95,7 @@ export default function Header() {
               />
             </form>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <Globe className="h-5 w-5" />
-                <span className="sr-only">Language</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>English</DropdownMenuItem>
-              <DropdownMenuItem>Spanish</DropdownMenuItem>
-              <DropdownMenuItem>French</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
           <Button variant="ghost" size="icon" className="relative" asChild>
             <Link href="/login">
               <User className="h-5 w-5" />
@@ -107,9 +105,11 @@ export default function Header() {
           <Button variant="ghost" size="icon" className="relative" asChild>
             <Link href="/cart">
               <ShoppingCart className="h-5 w-5" />
-              <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground">
-                3
-              </Badge>
+              {isHydrated && cartCount > 0 && (
+                <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-primary text-primary-foreground">
+                  {cartCount}
+                </Badge>
+              )}
               <span className="sr-only">Cart</span>
             </Link>
           </Button>
@@ -124,13 +124,13 @@ export default function Header() {
         <div className="md:hidden border-t p-4 space-y-4 bg-background">
           <form onSubmit={handleSearch} className="relative mb-4">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input 
-              type="search" 
+            <Input
+              type="search"
               name="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..." 
-              className="w-full pl-8 rounded-full bg-muted" 
+              placeholder="Search..."
+              className="w-full pl-8 rounded-full bg-muted"
             />
           </form>
           <nav className="flex flex-col space-y-4">
