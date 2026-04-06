@@ -101,6 +101,7 @@ export default function ProductPage({ product, relatedProducts }: ProductPagePro
                   <img
                     src={images[selectedImage]}
                     alt={product.name}
+                    loading="lazy"
                     className="h-full w-full object-cover"
                   />
                   {images.length > 1 && (
@@ -145,6 +146,7 @@ export default function ProductPage({ product, relatedProducts }: ProductPagePro
                         <img
                           src={image}
                           alt={`${product.name} - ${index + 1}`}
+                          loading="lazy"
                           className="h-full w-full object-cover"
                         />
                       </button>

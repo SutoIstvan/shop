@@ -3,6 +3,7 @@ import { Heart, Search, ShoppingCart } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { storageUrl } from "@/lib/image-url"
 
 export interface ProductCardProps {
@@ -30,6 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <img
           src={imageUrl}
           alt={product.name}
+          loading="lazy"
           className="h-full w-full object-cover transition-transform group-hover:scale-105"
         />
         <div className="absolute top-4 right-4 flex flex-col gap-2">
@@ -84,5 +86,19 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
     </Link>
+  )
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="block">
+      <Skeleton className="aspect-square w-full rounded-lg" />
+      <div className="mt-4 flex flex-col items-center space-y-2">
+        <Skeleton className="mb-1 h-5 w-24 rounded-full" />
+        <Skeleton className="h-5 w-3/4" />
+        <Skeleton className="h-5 w-16" />
+        <Skeleton className="mt-1 h-4 w-24" />
+      </div>
+    </div>
   )
 }

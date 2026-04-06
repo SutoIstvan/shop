@@ -45,18 +45,25 @@ interface ShopProps {
   initialCategory?: string;
 }
 
-export default function ShopPage({ products, categories, brands, initialCategory }: ShopProps) {
+  export default function ShopPage({ products, categories, brands, initialCategory }: ShopProps) {
   const [priceRange, setPriceRange] = useState([0, 10000])
-  const [selectedFilters, setSelectedFilters] = useState<{ categories: string[]; brands: string[]; ratings: number[] }>({
+  const [selectedFilters, setSelectedFilters] = useState<{ categories: string[]; brands: string[] }>({
     categories: initialCategory ? [initialCategory] : [],
     brands: [],
-    ratings: [],
   })
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const [startPage, setStartPage] = useState(1)
+  const [endPage, setEndPage] = useState(1)
+  const [sortBy, setSortBy] = useState("featured")
+  const itemsPerPage = 9
 
+  const resetPagination = () => {
+    setStartPage(1)
+    setEndPage(1)
+  }
 
-
-  const toggleFilter = (type: "categories" | "brands" | "ratings", value: string | number) => {
+  const toggleFilter = (type: "categories" | "brands", value: string | number) => {
+    resetPagination()
     setSelectedFilters((prev) => {
       // @ts-ignore
       const current = [...prev[type]]
@@ -79,18 +86,17 @@ export default function ShopPage({ products, categories, brands, initialCategory
     setSelectedFilters({
       categories: [],
       brands: [],
-      ratings: [],
     })
     setPriceRange([0, 10000])
+    resetPagination()
   }
 
-  const FilterSidebar = ({ isMobile = false }) => (
+  const renderFilterSidebar = (isMobile = false) => (
     <div className={`space-y-6 ${isMobile ? "" : "sticky top-20"}`}>
       <div className="flex items-center justify-between">
         <h3 className="font-medium text-lg">Filters</h3>
         {(selectedFilters.categories.length > 0 ||
           selectedFilters.brands.length > 0 ||
-          selectedFilters.ratings.length > 0 ||
           priceRange[0] > 0 ||
           priceRange[1] < 10000) && (
             <Button
@@ -136,6 +142,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
                   step={100}
                   value={priceRange}
                   onValueChange={setPriceRange}
+                  onValueCommit={resetPagination}
                   className="py-4"
                 />
                 <div className="flex items-center justify-between">
@@ -166,38 +173,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="ratings">
-            <AccordionTrigger>Ratings</AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-2">
-                {[5, 4, 3, 2, 1].map((rating) => (
-                  <div key={rating} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`rating-${rating}`}
-                      checked={selectedFilters.ratings.includes(rating)}
-                      onCheckedChange={() => toggleFilter("ratings", rating)}
-                    />
-                    <Label
-                      htmlFor={`rating-${rating}`}
-                      className="text-sm font-normal cursor-pointer flex items-center"
-                    >
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                        </svg>
-                      ))}
-                      <span className="ml-1">& Up</span>
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+
         </Accordion>
       </div>
     </div>
@@ -214,10 +190,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
       return false
     }
 
-    // Filter by rating
-    if (selectedFilters.ratings.length > 0 && !selectedFilters.ratings.some((r) => 5 >= r)) {
-      return false
-    }
+
 
     // Filter by price
     const prodPrice = Number(product.price)
@@ -227,6 +200,23 @@ export default function ShopPage({ products, categories, brands, initialCategory
 
     return true
   })
+
+  let sortedProducts = [...filteredProducts]
+  switch (sortBy) {
+    case "price-low":
+      sortedProducts.sort((a, b) => Number(a.price) - Number(b.price))
+      break
+    case "price-high":
+      sortedProducts.sort((a, b) => Number(b.price) - Number(a.price))
+      break
+    case "newest":
+      sortedProducts.sort((a, b) => b.id - a.id)
+      break
+    case "featured":
+    default:
+      break
+  }
+
 
   return (
     <>
@@ -249,7 +239,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
             <div className="flex flex-col md:flex-row gap-8">
               {/* Filters - Desktop */}
               <div className="hidden md:block w-64 shrink-0">
-                <FilterSidebar />
+                {renderFilterSidebar()}
               </div>
 
               {/* Filters - Mobile */}
@@ -259,7 +249,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
                     <SheetTitle>Filters</SheetTitle>
                     <SheetDescription>Narrow down your product search</SheetDescription>
                   </SheetHeader>
-                  <FilterSidebar isMobile={true} />
+                  {renderFilterSidebar(true)}
                 </SheetContent>
               </Sheet>
 
@@ -280,21 +270,63 @@ export default function ShopPage({ products, categories, brands, initialCategory
                     {/* Active filters */}
                     <div className="flex flex-wrap gap-2">
                       {selectedFilters.categories.map((category) => (
-                        <Badge key={`cat-${category}`} variant="secondary" className="flex items-center gap-1">
-                          {category}
-                          <X className="h-3 w-3 cursor-pointer" onClick={() => toggleFilter("categories", category)} />
+                        <Badge 
+                          key={`cat-${category}`} 
+                          variant="secondary" 
+                          className="flex items-center gap-1 pl-2 pr-1 py-1"
+                        >
+                          <span>{category}</span>
+                          <button
+                            type="button"
+                            className="ml-1 rounded-full p-0.5 hover:bg-secondary-foreground/20 focus:outline-none"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleFilter("categories", category);
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                            <span className="sr-only">Remove</span>
+                          </button>
                         </Badge>
                       ))}
                       {selectedFilters.brands.map((brand) => (
-                        <Badge key={`brand-${brand}`} variant="secondary" className="flex items-center gap-1">
-                          {brand}
-                          <X className="h-3 w-3 cursor-pointer" onClick={() => toggleFilter("brands", brand)} />
+                        <Badge 
+                          key={`brand-${brand}`} 
+                          variant="secondary" 
+                          className="flex items-center gap-1 pl-2 pr-1 py-1"
+                        >
+                          <span>{brand}</span>
+                          <button
+                            type="button"
+                            className="ml-1 rounded-full p-0.5 hover:bg-secondary-foreground/20 focus:outline-none"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleFilter("brands", brand);
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                            <span className="sr-only">Remove</span>
+                          </button>
                         </Badge>
                       ))}
                       {(priceRange[0] > 0 || priceRange[1] < 10000) && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          ${priceRange[0]} - ${priceRange[1]}
-                          <X className="h-3 w-3 cursor-pointer" onClick={() => setPriceRange([0, 10000])} />
+                        <Badge 
+                          variant="secondary" 
+                          className="flex items-center gap-1 pl-2 pr-1 py-1"
+                        >
+                          <span>${priceRange[0]} - ${priceRange[1]}</span>
+                          <button
+                            type="button"
+                            className="ml-1 rounded-full p-0.5 hover:bg-secondary-foreground/20 focus:outline-none"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setPriceRange([0, 10000]);
+                              resetPagination();
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                            <span className="sr-only">Remove</span>
+                          </button>
                         </Badge>
                       )}
                     </div>
@@ -302,7 +334,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
 
                   <div className="flex items-center gap-2 ml-auto">
                     <span className="text-sm text-muted-foreground hidden sm:inline">{filteredProducts.length} products</span>
-                    <Select defaultValue="featured">
+                    <Select value={sortBy} onValueChange={(val) => { setSortBy(val); resetPagination(); }}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Sort by" />
                       </SelectTrigger>
@@ -323,35 +355,79 @@ export default function ShopPage({ products, categories, brands, initialCategory
                     <Button onClick={clearFilters}>Clear all filters</Button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredProducts.map((product) => (
-                      <ProductCard key={product.id} product={product as any} />
-                    ))}
-                  </div>
-                )}
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {sortedProducts.slice((startPage - 1) * itemsPerPage, endPage * itemsPerPage).map((product) => (
+                        <ProductCard key={product.id} product={product as any} />
+                      ))}
+                    </div>
 
-                {/* Pagination */}
-                <div className="flex items-center justify-center space-x-2 mt-12">
-                  <Button variant="outline" size="icon" disabled>
-                    <ChevronDown className="h-4 w-4 rotate-90" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 w-8 p-0 bg-primary text-primary-foreground hover:bg-primary/90"
-                  >
-                    1
-                  </Button>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                    2
-                  </Button>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                    3
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <ChevronDown className="h-4 w-4 -rotate-90" />
-                  </Button>
-                </div>
+                    {/* Pagination Options */}
+                    <div className="mt-12 flex flex-col items-center gap-6">
+                      {/* Show More Button */}
+                      {endPage * itemsPerPage < filteredProducts.length && (
+                        <Button 
+                          variant="outline" 
+                          size="lg" 
+                          className="w-full sm:w-auto px-12"
+                          onClick={() => setEndPage(prev => prev + 1)}
+                        >
+                          Показать еще товары
+                        </Button>
+                      )}
+
+                      {/* Pagination Numbers */}
+                      <div className="flex items-center justify-center space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          disabled={startPage === 1 && endPage === 1}
+                          onClick={() => {
+                            const newPage = Math.max(1, startPage - 1)
+                            setStartPage(newPage)
+                            setEndPage(newPage)
+                          }}
+                        >
+                          <ChevronDown className="h-4 w-4 rotate-90" />
+                        </Button>
+                        
+                        {Array.from({ length: Math.ceil(filteredProducts.length / itemsPerPage) }, (_, i) => i + 1).map((page) => {
+                          const isActive = page >= startPage && page <= endPage;
+                          const isSingleActive = isActive && startPage === endPage;
+                          const isMultiActive = isActive && startPage !== endPage;
+                          
+                          return (
+                            <Button
+                              key={page}
+                              variant={isSingleActive ? "default" : (isMultiActive ? "secondary" : "outline")}
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => {
+                                setStartPage(page)
+                                setEndPage(page)
+                              }}
+                            >
+                              {page}
+                            </Button>
+                          );
+                        })}
+
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          disabled={endPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0}
+                          onClick={() => {
+                            const newPage = Math.min(Math.ceil(filteredProducts.length / itemsPerPage), endPage + 1)
+                            setStartPage(newPage)
+                            setEndPage(newPage)
+                          }}
+                        >
+                          <ChevronDown className="h-4 w-4 -rotate-90" />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
