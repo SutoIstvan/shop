@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Link, usePage } from "@inertiajs/react"
+import { useState, useEffect } from "react"
+import { Link, usePage, router } from "@inertiajs/react"
 import { ShoppingCart, Search, ChevronDown, Globe, User, Menu, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,24 @@ import { Badge } from "@/components/ui/badge"
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { sharedCategories } = usePage<any>().props
+  const [searchQuery, setSearchQuery] = useState("")
+  const { sharedCategories, url } = usePage<any>().props
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      setSearchQuery(params.get('search') || "")
+    }
+  }, [url])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.get('/shop', { search: searchQuery }, { preserveState: true })
+    } else {
+      router.get('/shop')
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
@@ -56,14 +73,17 @@ export default function Header() {
         </div>
         <div className="flex items-center gap-4">
           <div className="hidden md:flex">
-            <div className="relative">
+            <form onSubmit={handleSearch} className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
+                name="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
                 className="w-[200px] pl-8 md:w-[250px] rounded-full bg-muted"
               />
-            </div>
+            </form>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -102,10 +122,17 @@ export default function Header() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t p-4 space-y-4 bg-background">
-          <div className="relative mb-4">
+          <form onSubmit={handleSearch} className="relative mb-4">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input type="search" placeholder="Search..." className="w-full pl-8 rounded-full bg-muted" />
-          </div>
+            <Input 
+              type="search" 
+              name="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..." 
+              className="w-full pl-8 rounded-full bg-muted" 
+            />
+          </form>
           <nav className="flex flex-col space-y-4">
             <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
               Home

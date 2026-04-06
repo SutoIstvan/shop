@@ -43,9 +43,10 @@ interface ShopProps {
   categories: Category[];
   brands: Brand[];
   initialCategory?: string;
+  initialSearch?: string;
 }
 
-  export default function ShopPage({ products, categories, brands, initialCategory }: ShopProps) {
+export default function ShopPage({ products, categories, brands, initialCategory, initialSearch }: ShopProps) {
   const [priceRange, setPriceRange] = useState([0, 10000])
   const [selectedFilters, setSelectedFilters] = useState<{ categories: string[]; brands: string[] }>({
     categories: initialCategory ? [initialCategory] : [],
@@ -220,13 +221,15 @@ interface ShopProps {
 
   return (
     <>
-      <Head title="Shop - PetDo" />
+      <Head title={initialSearch ? `Search: ${initialSearch} - PetDo` : "Shop - PetDo"} />
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">
           <div className="container px-4 py-8 md:px-6 md:py-12">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">Shop All Products</h1>
+              <h1 className="text-3xl font-bold mb-2">
+                {initialSearch ? `Search Results for "${initialSearch}"` : "Shop All Products"}
+              </h1>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Link href="/" className="hover:text-primary">
                   Home
@@ -269,6 +272,23 @@ interface ShopProps {
 
                     {/* Active filters */}
                     <div className="flex flex-wrap gap-2">
+                      {initialSearch && (
+                        <Badge 
+                          variant="secondary" 
+                          className="flex items-center gap-1 pl-2 pr-1 py-1"
+                        >
+                          <span>Search: {initialSearch}</span>
+                          <Link
+                            href="/shop"
+                            className="ml-1 rounded-full p-0.5 hover:bg-secondary-foreground/20 focus:outline-none"
+                            preserveState
+                            preserveScroll
+                          >
+                            <X className="h-3 w-3" />
+                            <span className="sr-only">Remove</span>
+                          </Link>
+                        </Badge>
+                      )}
                       {selectedFilters.categories.map((category) => (
                         <Badge 
                           key={`cat-${category}`} 
@@ -386,6 +406,7 @@ interface ShopProps {
                             const newPage = Math.max(1, startPage - 1)
                             setStartPage(newPage)
                             setEndPage(newPage)
+                            window.scrollTo({ top: 0, behavior: "smooth" })
                           }}
                         >
                           <ChevronDown className="h-4 w-4 rotate-90" />
@@ -405,6 +426,7 @@ interface ShopProps {
                               onClick={() => {
                                 setStartPage(page)
                                 setEndPage(page)
+                                window.scrollTo({ top: 0, behavior: "smooth" })
                               }}
                             >
                               {page}
@@ -417,9 +439,10 @@ interface ShopProps {
                           size="icon"
                           disabled={endPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0}
                           onClick={() => {
-                            const newPage = Math.min(Math.ceil(filteredProducts.length / itemsPerPage), endPage + 1)
+                            const newPage = Math.min(Math.ceil(sortedProducts.length / itemsPerPage), endPage + 1)
                             setStartPage(newPage)
                             setEndPage(newPage)
+                            window.scrollTo({ top: 0, behavior: "smooth" })
                           }}
                         >
                           <ChevronDown className="h-4 w-4 -rotate-90" />

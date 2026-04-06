@@ -17,11 +17,22 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/shop', function () {
+    $query = Product::with(['category', 'brand'])->where('is_active', true);
+
+    if (request()->filled('search')) {
+        $search = request()->query('search');
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%");
+        });
+    }
+
     return Inertia::render('shop', [
-        'products' => Product::with(['category', 'brand'])->where('is_active', true)->orderBy('created_at', 'desc')->get(),
+        'products' => $query->orderBy('created_at', 'desc')->get(),
         'categories' => Category::where('is_active', true)->orderBy('sort_order')->get(),
         'brands' => Brand::where('is_active', true)->get(),
         'initialCategory' => request()->query('category'),
+        'initialSearch' => request()->query('search'),
     ]);
 })->name('shop');
 
