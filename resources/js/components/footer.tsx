@@ -8,16 +8,16 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
               <img
-                src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.0.3"
-                alt="PetDo Logo"
+                src="/logo-shop-2.png"
+                alt="Vio Logo"
                 width={40}
                 height={40}
                 className="rounded-full bg-primary object-cover"
               />
-              <span className="text-xl font-bold">PetDo</span>
+              <span className="text-xl font-bold">Vio<span className="text-xs text-muted-foreground">.com.ua</span></span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Your one-stop shop for all pet needs. Quality products for your furry friends.
+              Your one-stop shop for all you needs.
             </p>
             <div className="flex gap-4">
               <Link href="#" className="text-muted-foreground hover:text-primary">
@@ -76,73 +76,52 @@ export default function Footer() {
             </div>
           </div>
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">Shop</h3>
             <nav className="flex flex-col space-y-2">
-              <Link href="/shop" className="text-sm text-muted-foreground hover:text-primary">
-                All Products
-              </Link>
-              <Link href="/category/food" className="text-sm text-muted-foreground hover:text-primary">
-                Dog Food
-              </Link>
-              <Link href="/category/accessories" className="text-sm text-muted-foreground hover:text-primary">
-                Accessories
-              </Link>
-              <Link href="/category/toys" className="text-sm text-muted-foreground hover:text-primary">
-                Toys
-              </Link>
-              <Link href="/category/grooming" className="text-sm text-muted-foreground hover:text-primary">
-                Grooming
-              </Link>
+
             </nav>
           </div>
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">Company</h3>
+            <h3 className="text-sm font-medium">Shop</h3>
             <nav className="flex flex-col space-y-2">
               <Link href="/about" className="text-sm text-muted-foreground hover:text-primary">
                 About Us
               </Link>
               <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-                Careers
+                Contact
               </Link>
               <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-                Press
-              </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-                Blog
+                Help
               </Link>
             </nav>
           </div>
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">Support</h3>
+            <h3 className="text-sm font-medium">Category</h3>
             <nav className="flex flex-col space-y-2">
+
               <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-                Help Center
-              </Link>
-              <Link href="/contact" className="text-sm text-muted-foreground hover:text-primary">
-                Contact Us
+                Кофе
               </Link>
               <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-                Returns & Refunds
+                Шоколад
               </Link>
               <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-                Delivery Information
+                Сыр
               </Link>
             </nav>
           </div>
           <div className="space-y-4">
             <h3 className="text-sm font-medium">Contact</h3>
             <div className="flex flex-col space-y-2 text-sm text-muted-foreground">
-              <p>123 Pet Street, Dogville</p>
-              <p>New York, NY 10001</p>
-              <p>Email: info@petdo.com</p>
-              <p>Phone: (123) 456-7890</p>
+              <p>Ukraine, Zakarpatya</p>
+              <p>Email: info@vio.com.ua</p>
+              <p>Phone: (099) 329-7890</p>
             </div>
           </div>
         </div>
         <div className="mt-8 border-t pt-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} PetDo. All rights reserved.
+              &copy; {new Date().getFullYear()} Vio. All rights reserved.
             </p>
             <div className="flex gap-4">
               <Link href="#" className="text-xs text-muted-foreground hover:text-primary">
@@ -163,17 +142,12 @@ export default function Footer() {
                 className="h-[30px] object-contain"
               />
               <img
-                src="https://cdn.pixabay.com/photo/2021/12/08/05/16/mastercard-6854992_1280.png"
+                src="https://cdn.pixabay.com/photo/2015/05/26/09/37/paypal-784404_1280.png"
                 alt="Mastercard"
                 width={50}
                 className="h-[30px] object-contain"
               />
-              <img
-                src="https://cdn.pixabay.com/photo/2022/01/17/14/39/credit-card-6944925_1280.png"
-                alt="American Express"
-                width={50}
-                className="h-[30px] object-contain"
-              />
+
             </div>
           </div>
         </div>

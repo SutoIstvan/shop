@@ -12,10 +12,10 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const { sharedCategories, url } = usePage<any>().props
-  
+
   const cartItems = useCartStore((state) => state.items)
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
-  
+
   // Hydration fix for persist
   const [isHydrated, setIsHydrated] = useState(false)
   useEffect(() => {
@@ -44,13 +44,13 @@ export default function Header() {
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center gap-2">
             <img
-              src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.0.3"
-              alt="PetDo Logo"
+              src="/logo-shop-2.png"
+              alt="Vio Logo"
               width={40}
               height={40}
               className="rounded-full bg-primary object-cover"
             />
-            <span className="text-xl font-bold">PetDo</span>
+            <span className="text-xl font-bold">Vio<span className="text-xs text-muted-foreground">.com.ua</span></span>
           </Link>
           <nav className="hidden md:flex gap-6">
             <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">

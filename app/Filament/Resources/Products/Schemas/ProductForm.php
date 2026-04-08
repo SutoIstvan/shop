@@ -2,13 +2,16 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
-use App\Models\Brand;
+use App\Models\AiSetting;
 use App\Models\Category;
+use App\Services\OpenAiService;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -17,6 +20,8 @@ class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $aiConfigured = app(OpenAiService::class)->isConfigured();
+
         return $schema
             ->components([
                 Grid::make(3) // 3 колонки
@@ -44,7 +49,12 @@ class ProductForm
 
                                         Textarea::make('description')
                                             ->columnSpanFull()
-                                            ->rows(4),
+                                            ->rows(6)
+                                            ->hintActions(
+                                                $aiConfigured
+                                                    ? [static::getGenerateDescriptionAction()]
+                                                    : []
+                                            ),
                                     ]),
 
                                 Section::make('Pricing & Inventory')
@@ -111,19 +121,129 @@ class ProductForm
                             ]),
 
                         // 👉 ПРАВАЯ ЧАСТЬ (1/3 ширины)
-                        Section::make('Images')
+                        Grid::make(1)
                             ->columnSpan(1)
                             ->schema([
-                                FileUpload::make('images')
-                                    ->image()
-                                    ->multiple()
-                                    ->maxFiles(10)
-                                    ->reorderable()
-                                    ->disk('public')
-                                    ->visibility('public')
-                                    ->directory('products'),
+                                Section::make('Images')
+                                    ->schema([
+                                        FileUpload::make('images')
+                                            ->image()
+                                            ->multiple()
+                                            ->maxFiles(10)
+                                            ->reorderable()
+                                            ->disk('public')
+                                            ->visibility('public')
+                                            ->directory('products'),
+                                    ])
+                                    ->headerActions(
+                                        $aiConfigured
+                                            ? [static::getEnhanceImageAction()]
+                                            : []
+                                    ),
                             ]),
                     ]),
             ]);
+    }
+
+    protected static function getGenerateDescriptionAction(): Action
+    {
+        return Action::make('generateDescription')
+            ->label('AI Generate')
+            ->icon('heroicon-o-sparkles')
+            ->color('primary')
+            ->action(function ($component, $set, $get) {
+                $name = $get('name');
+
+                if (! filled($name)) {
+                    Notification::make()
+                        ->warning()
+                        ->title('Product name is required')
+                        ->body('Please fill in the product name first before generating a description.')
+                        ->send();
+
+                    return;
+                }
+
+                $categoryName = null;
+                $categoryId = $get('category_id');
+                if (! empty($categoryId)) {
+                    $categoryName = Category::find($categoryId)?->name;
+                }
+
+                $price = $get('price');
+
+                try {
+                    $service = app(OpenAiService::class);
+                    $description = $service->generateProductDescription(
+                        $name,
+                        $categoryName,
+                        $price ? (float) $price : null
+                    );
+
+                    $set('description', $description);
+
+                    Notification::make()
+                        ->success()
+                        ->title('Description generated!')
+                        ->body('AI-generated description has been added.')
+                        ->send();
+                } catch (\Throwable $e) {
+                    Notification::make()
+                        ->danger()
+                        ->title('AI Generation Failed')
+                        ->body($e->getMessage())
+                        ->send();
+                }
+            });
+    }
+
+    protected static function getEnhanceImageAction(): Action
+    {
+        return Action::make('enhanceImage')
+            ->label('AI Enhance')
+            ->icon('heroicon-o-sparkles')
+            ->color('primary')
+            ->requiresConfirmation()
+            ->modalHeading('Enhance Product Image')
+            ->modalDescription('This will enhance the first uploaded image using AI (improve lighting, sharpen, clean background). This may take up to 60 seconds.')
+            ->action(function ($component, $set, $get) {
+                $images = $get('images') ?? [];
+
+                if (empty($images)) {
+                    Notification::make()
+                        ->warning()
+                        ->title('No images to enhance')
+                        ->body('Please upload at least one image first.')
+                        ->send();
+
+                    return;
+                }
+
+                // Take the first image for enhancement
+                $imagesList = is_array($images) ? array_values($images) : [$images];
+                $firstImage = $imagesList[0];
+
+                try {
+                    $service = app(OpenAiService::class);
+                    $newPath = $service->enhanceProductImage($firstImage);
+
+                    // Replace the first image with the enhanced version
+                    $keys = array_keys($images);
+                    $images[$keys[0]] = $newPath;
+                    $set('images', $images);
+
+                    Notification::make()
+                        ->success()
+                        ->title('Image enhanced!')
+                        ->body('The first product image has been enhanced using AI.')
+                        ->send();
+                } catch (\Throwable $e) {
+                    Notification::make()
+                        ->danger()
+                        ->title('AI Enhancement Failed')
+                        ->body($e->getMessage())
+                        ->send();
+                }
+            });
     }
 }

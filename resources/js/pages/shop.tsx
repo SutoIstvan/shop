@@ -263,7 +263,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
                     <Button
                       variant="outline"
                       size="sm"
-                      className="md:hidden flex items-center gap-2"
+                      className="md:hidden flex items-center gap-2 mt-6"
                       onClick={() => setMobileFiltersOpen(true)}
                     >
                       <Filter className="h-4 w-4" />
@@ -273,8 +273,8 @@ export default function ShopPage({ products, categories, brands, initialCategory
                     {/* Active filters */}
                     <div className="flex flex-wrap gap-2">
                       {initialSearch && (
-                        <Badge 
-                          variant="secondary" 
+                        <Badge
+                          variant="secondary"
                           className="flex items-center gap-1 pl-2 pr-1 py-1"
                         >
                           <span>Search: {initialSearch}</span>
@@ -290,9 +290,9 @@ export default function ShopPage({ products, categories, brands, initialCategory
                         </Badge>
                       )}
                       {selectedFilters.categories.map((category) => (
-                        <Badge 
-                          key={`cat-${category}`} 
-                          variant="secondary" 
+                        <Badge
+                          key={`cat-${category}`}
+                          variant="secondary"
                           className="flex items-center gap-1 pl-2 pr-1 py-1"
                         >
                           <span>{category}</span>
@@ -310,9 +310,9 @@ export default function ShopPage({ products, categories, brands, initialCategory
                         </Badge>
                       ))}
                       {selectedFilters.brands.map((brand) => (
-                        <Badge 
-                          key={`brand-${brand}`} 
-                          variant="secondary" 
+                        <Badge
+                          key={`brand-${brand}`}
+                          variant="secondary"
                           className="flex items-center gap-1 pl-2 pr-1 py-1"
                         >
                           <span>{brand}</span>
@@ -330,8 +330,8 @@ export default function ShopPage({ products, categories, brands, initialCategory
                         </Badge>
                       ))}
                       {(priceRange[0] > 0 || priceRange[1] < 10000) && (
-                        <Badge 
-                          variant="secondary" 
+                        <Badge
+                          variant="secondary"
                           className="flex items-center gap-1 pl-2 pr-1 py-1"
                         >
                           <span>${priceRange[0]} - ${priceRange[1]}</span>
@@ -386,9 +386,9 @@ export default function ShopPage({ products, categories, brands, initialCategory
                     <div className="mt-12 flex flex-col items-center gap-6">
                       {/* Show More Button */}
                       {endPage * itemsPerPage < filteredProducts.length && (
-                        <Button 
-                          variant="outline" 
-                          size="lg" 
+                        <Button
+                          variant="outline"
+                          size="lg"
                           className="w-full sm:w-auto px-12"
                           onClick={() => setEndPage(prev => prev + 1)}
                         >
@@ -398,9 +398,9 @@ export default function ShopPage({ products, categories, brands, initialCategory
 
                       {/* Pagination Numbers */}
                       <div className="flex items-center justify-center space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
+                        <Button
+                          variant="outline"
+                          size="icon"
                           disabled={startPage === 1 && endPage === 1}
                           onClick={() => {
                             const newPage = Math.max(1, startPage - 1)
@@ -411,12 +411,12 @@ export default function ShopPage({ products, categories, brands, initialCategory
                         >
                           <ChevronDown className="h-4 w-4 rotate-90" />
                         </Button>
-                        
+
                         {Array.from({ length: Math.ceil(filteredProducts.length / itemsPerPage) }, (_, i) => i + 1).map((page) => {
                           const isActive = page >= startPage && page <= endPage;
                           const isSingleActive = isActive && startPage === endPage;
                           const isMultiActive = isActive && startPage !== endPage;
-                          
+
                           return (
                             <Button
                               key={page}
@@ -434,8 +434,8 @@ export default function ShopPage({ products, categories, brands, initialCategory
                           );
                         })}
 
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="icon"
                           disabled={endPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0}
                           onClick={() => {
