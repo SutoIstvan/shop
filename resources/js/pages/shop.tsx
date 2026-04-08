@@ -221,7 +221,7 @@ export default function ShopPage({ products, categories, brands, initialCategory
 
   return (
     <>
-      <Head title={initialSearch ? `Search: ${initialSearch} - PetDo` : "Shop - PetDo"} />
+      <Head title={initialSearch ? `Search: ${initialSearch}` : "Shop"} />
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">

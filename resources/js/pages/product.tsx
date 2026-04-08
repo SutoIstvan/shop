@@ -82,7 +82,7 @@ export default function ProductPage({ product, relatedProducts }: ProductPagePro
 
   return (
     <>
-      <Head title={`${product.name} - PetDo`} />
+      <Head title={`${product.name}`} />
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">
@@ -154,11 +154,10 @@ export default function ProductPage({ product, relatedProducts }: ProductPagePro
                       <button
                         key={index}
                         onClick={() => setSelectedImage(index)}
-                        className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
-                          selectedImage === index
+                        className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${selectedImage === index
                             ? "border-primary ring-2 ring-primary/20"
                             : "border-transparent hover:border-muted-foreground/30"
-                        }`}
+                          }`}
                       >
                         <img
                           src={image}

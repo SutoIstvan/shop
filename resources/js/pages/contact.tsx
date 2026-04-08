@@ -23,7 +23,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <Head title="Contact Us - PetDo" />
+      <Head title="Contact Us" />
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">

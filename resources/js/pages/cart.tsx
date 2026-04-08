@@ -17,19 +17,19 @@ export default function CartPage() {
   const updateQuantity = useCartStore((state) => state.updateQuantity)
   const removeItem = useCartStore((state) => state.removeItem)
   const clearCart = useCartStore((state) => state.clearCart)
-  
+
   // Hydration fix
   const [isHydrated, setIsHydrated] = useState(false)
   useEffect(() => {
     setIsHydrated(true)
   }, [])
-  
+
   const subtotal = cartItems.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0)
   const total = subtotal
 
   return (
     <>
-      <Head title="Cart - PetDo" />
+      <Head title="Cart" />
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">
@@ -70,78 +70,79 @@ export default function CartPage() {
                       {isHydrated && cartItems.map((item, index) => {
                         const currentImage = item.product.images?.[0] ? storageUrl(item.product.images[0]) : "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/electronics/White-Wireless-Earbuds-in-Charging-Case-1.jpeg";
                         return (
-                        <div key={item.id}>
-                          <div className="py-6">
-                            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                              <div className="col-span-6 flex items-center gap-4">
-                                <div className="relative h-20 w-20 rounded-md overflow-hidden bg-muted">
-                                  <img 
-                                    src={currentImage} 
-                                    alt={item.product.name} 
-                                    className="object-cover w-full h-full absolute inset-0" 
-                                  />
+                          <div key={item.id}>
+                            <div className="py-6">
+                              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                                <div className="col-span-6 flex items-center gap-4">
+                                  <div className="relative h-20 w-20 rounded-md overflow-hidden bg-muted">
+                                    <img
+                                      src={currentImage}
+                                      alt={item.product.name}
+                                      className="object-cover w-full h-full absolute inset-0"
+                                    />
+                                  </div>
+                                  <div>
+                                    <h3 className="font-medium text-balance pr-2">{item.product.name}</h3>
+                                    <p className="text-sm text-muted-foreground md:hidden">
+                                      ${Number(item.product.price).toFixed(2)}
+                                    </p>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="mt-1 h-auto p-0 text-sm text-destructive hover:text-destructive/80 md:hidden"
+                                      onClick={() => removeItem(item.id)}
+                                    >
+                                      <Trash2 className="mr-1 h-3 w-3" />
+                                      Remove
+                                    </Button>
+                                  </div>
                                 </div>
-                                <div>
-                                  <h3 className="font-medium text-balance pr-2">{item.product.name}</h3>
-                                  <p className="text-sm text-muted-foreground md:hidden">
-                                    ${Number(item.product.price).toFixed(2)}
-                                  </p>
+                                <div className="col-span-2 text-center hidden md:block">
+                                  ${Number(item.product.price).toFixed(2)}
+                                </div>
+                                <div className="col-span-2 flex items-center justify-center">
+                                  <div className="flex items-center border rounded-md">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 rounded-none"
+                                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                    >
+                                      <Minus className="h-3 w-3" />
+                                      <span className="sr-only">Decrease</span>
+                                    </Button>
+                                    <span className="w-8 text-center text-sm">{item.quantity}</span>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 rounded-none"
+                                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                      <span className="sr-only">Increase</span>
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="col-span-2 text-right flex items-center justify-between md:justify-end">
+                                  <span className="font-medium">
+                                    ${(Number(item.product.price) * item.quantity).toFixed(2)}
+                                  </span>
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="mt-1 h-auto p-0 text-sm text-destructive hover:text-destructive/80 md:hidden"
+                                    className="text-destructive hover:text-destructive/80 hidden md:inline-flex"
                                     onClick={() => removeItem(item.id)}
                                   >
-                                    <Trash2 className="mr-1 h-3 w-3" />
-                                    Remove
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">Remove</span>
                                   </Button>
                                 </div>
-                              </div>
-                              <div className="col-span-2 text-center hidden md:block">
-                                ${Number(item.product.price).toFixed(2)}
-                              </div>
-                              <div className="col-span-2 flex items-center justify-center">
-                                <div className="flex items-center border rounded-md">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 rounded-none"
-                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                  >
-                                    <Minus className="h-3 w-3" />
-                                    <span className="sr-only">Decrease</span>
-                                  </Button>
-                                  <span className="w-8 text-center text-sm">{item.quantity}</span>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 rounded-none"
-                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                    <span className="sr-only">Increase</span>
-                                  </Button>
-                                </div>
-                              </div>
-                              <div className="col-span-2 text-right flex items-center justify-between md:justify-end">
-                                <span className="font-medium">
-                                  ${(Number(item.product.price) * item.quantity).toFixed(2)}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-destructive hover:text-destructive/80 hidden md:inline-flex"
-                                  onClick={() => removeItem(item.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                  <span className="sr-only">Remove</span>
-                                </Button>
                               </div>
                             </div>
+                            {index < cartItems.length - 1 && <Separator />}
                           </div>
-                          {index < cartItems.length - 1 && <Separator />}
-                        </div>
-                      )})}
+                        )
+                      })}
                     </div>
                     <div className="flex items-center justify-between bg-muted p-6 rounded-b-lg">
                       <Button variant="outline" asChild>

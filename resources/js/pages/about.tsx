@@ -9,13 +9,13 @@ import Footer from "@/components/footer"
 export default function AboutPage() {
   return (
     <>
-      <Head title="About Us - PetDo" />
+      <Head title="About Us" />
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">
           <div className="container px-4 py-8 md:px-6 md:py-12">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">About PetDo</h1>
+              <h1 className="text-3xl font-bold mb-2">About</h1>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Link href="/" className="hover:text-primary">
                   Home

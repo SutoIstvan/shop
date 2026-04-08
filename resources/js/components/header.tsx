@@ -44,7 +44,7 @@ export default function Header() {
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center gap-2">
             <img
-              src="/logo-shop-2.png"
+              src="/logo-shop-3.png"
               alt="Vio Logo"
               width={40}
               height={40}

@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
               <img
-                src="/logo-shop-2.png"
+                src="/logo-shop-3.png"
                 alt="Vio Logo"
                 width={40}
                 height={40}

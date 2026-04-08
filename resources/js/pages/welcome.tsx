@@ -67,7 +67,7 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
 
   return (
     <>
-      <Head title="PetDo - Everything Your Dog Needs" />
+      <Head title="Vio - Качественные товары за доступную цену" />
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">
