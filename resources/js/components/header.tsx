@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react"
 import { Link, usePage, router } from "@inertiajs/react"
-import { ShoppingCart, Search, ChevronDown, User, Menu, X } from "lucide-react"
+import { ShoppingCart, Search, ChevronDown, User, Menu, X, Store, LayoutGrid } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu"
 import { Badge } from "@/components/ui/badge"
 import { useCartStore } from "@/store/use-cart-store"
 
@@ -52,34 +60,62 @@ export default function Header() {
             />
             <span className="text-xl font-bold">Vio<span className="text-xs text-muted-foreground">.com.ua</span></span>
           </Link>
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
-              Home
-            </Link>
-            <Link href="/shop" className="text-sm font-medium transition-colors hover:text-primary">
-              Shop
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary outline-none">
-                Categories <ChevronDown className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {sharedCategories?.map((category: any) => (
-                  <DropdownMenuItem key={category.id} asChild>
-                    <Link href={`/category/${category.slug}`} className="w-full cursor-pointer">
-                      {category.name}
+          <div className="hidden md:flex">
+            <NavigationMenu>
+              <NavigationMenuList className="gap-1">
+                {/* <NavigationMenuItem>
+                  <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} bg-transparent cursor-pointer flex-row !items-center`}>
+                    <Link href="/">Home</Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem> */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} bg-transparent cursor-pointer flex-row !items-center`}>
+                    <Link href="/shop">
+                      <Store className="mr-2 h-4 w-4" />
+                      Shop
                     </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link href="/about" className="text-sm font-medium transition-colors hover:text-primary">
-              About
-            </Link>
-            <Link href="/contact" className="text-sm font-medium transition-colors hover:text-primary">
-              Contact
-            </Link>
-          </nav>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="bg-transparent">
+                    <LayoutGrid className="mr-2 h-4 w-4" />
+                    Categories
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="flex flex-col w-[300px] gap-2 p-4 md:w-[350px]">
+                      {sharedCategories?.map((category: any) => (
+                        <li key={category.id}>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href={`/category/${category.slug}`}
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                            >
+                              <div className="text-sm font-medium leading-none">{category.name}</div>
+                              {category.description && (
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
+                                  {category.description}
+                                </p>
+                              )}
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} bg-transparent cursor-pointer flex-row !items-center`}>
+                    <Link href="/about">About</Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild className={`${navigationMenuTriggerStyle()} bg-transparent cursor-pointer flex-row !items-center`}>
+                    <Link href="/contact">Contact</Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="hidden md:flex">
@@ -134,15 +170,18 @@ export default function Header() {
             />
           </form>
           <nav className="flex flex-col space-y-4">
-            <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="/" className="flex items-center text-sm font-medium transition-colors hover:text-primary">
               Home
             </Link>
-            <Link href="/shop" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="/shop" className="flex items-center text-sm font-medium transition-colors hover:text-primary">
+              <Store className="mr-2 h-4 w-4" />
               Shop
             </Link>
             <details className="group">
-              <summary className="flex cursor-pointer items-center justify-between text-sm font-medium transition-colors hover:text-primary outline-none">
-                Categories <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+              <summary className="flex cursor-pointer items-center text-sm font-medium transition-colors hover:text-primary outline-none">
+                <LayoutGrid className="mr-2 h-4 w-4" />
+                Categories
+                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-open:rotate-180" />
               </summary>
               <nav className="mt-2 ml-4 flex flex-col space-y-2">
                 {sharedCategories?.map((category: any) => (
