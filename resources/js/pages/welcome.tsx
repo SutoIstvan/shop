@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { ProductCard } from "@/components/product-card"
+import { PopularCategories } from "@/components/popular-categories"
 
 interface Category {
   id: number;
@@ -101,6 +102,9 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
               </div>
             </div>
           </section>
+
+          {/* Popular Categories */}
+          <PopularCategories categories={categories} />
 
           {/* Product Categories */}
           <section className="bg-muted py-12 md:py-16">
