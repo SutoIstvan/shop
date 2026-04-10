@@ -11,7 +11,7 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
-        'categories' => Category::where('is_active', true)->whereNull('parent_id')->orderBy('sort_order')->take(4)->get(),
+        'categories' => Category::where('is_active', true)->whereNull('parent_id')->orderBy('sort_order')->take(6)->get(),
         'featuredProducts' => Product::with('category')->where('is_active', true)->where('is_featured', true)->take(4)->get(),
     ]);
 })->name('home');

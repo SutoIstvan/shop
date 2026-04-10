@@ -107,7 +107,7 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
           <PopularCategories categories={categories} />
 
           {/* Product Categories */}
-          <section className="bg-muted py-12 md:py-16">
+          {/* <section className="bg-muted py-12 md:py-16">
             <div className="container px-4 md:px-6">
               <h2 className="text-2xl font-bold tracking-tight text-center mb-8 md:text-3xl">Shop by Category</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -132,7 +132,7 @@ export default function Welcome({ categories, featuredProducts }: WelcomeProps) 
                 ))}
               </div>
             </div>
-          </section>
+          </section> */}
 
           {/* Featured Products */}
           <section className="py-12 md:py-16">
